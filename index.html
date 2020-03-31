@@ -59,8 +59,12 @@
       if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
           dx = -dx;
       }
-      if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
-          dy = -dy;
+      if(y + dy < ballRadius) {
+        dy = -dy;
+      } else if(y + dy > canvas.height-ballRadius) {
+          alert("GAME OVER");
+          document.location.reload();
+          clearInterval(interval); // Needed for Chrome to end game
       }
 
       if(rightPressed) {
@@ -103,7 +107,7 @@
       }
   }
 
-  setInterval(draw, 10);
+  var interval = setInterval(draw, 10);
 
 
 
