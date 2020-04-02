@@ -2,7 +2,7 @@ const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 
 
-const brickRowCount = 3;
+const brickRowCount = 6;
 const brickColumnCount = 5;
 const brickWidth = 75;
 const brickHeight = 20;
@@ -14,15 +14,15 @@ const brickOffsetLeft = 30;
 
 const paddleHeight = 10;
 const paddleWidth = 75;
-let paddleX = (canvas.width-paddleWidth) / 2;
+let paddleX = (canvas.width - paddleWidth) / 2;
 
 let rightPressed = false;
 let leftPressed = false;
 
 const ballRadius = 10;
 
-let x = canvas.width/2;
-let y = canvas.height-30;
+let x = canvas.width / 2;
+let y = canvas.height - 30;
 
 let dx = 2;
 let dy = -2;
@@ -49,25 +49,23 @@ function drawPaddle() {
 }
 
 
-const bricks = [];
-for (let c = 0; c < brickColumnCount; c += 1) {
-  bricks[c] = [];
-  for (let r = 0; r < brickRowCount; r += 1) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 };
-  }
-}
 
+
+const bricks = [];
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c += 1) {
+    bricks[c] = [];
     for (let r = 0; r < brickRowCount; r += 1) {
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
       if (bricks[c][r].status === 1) {
         const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
         const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        const col = Math.floor((Math.random() * 255) + 1);
         bricks[c][r].x = brickX;
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = 'rgba(' + Math.floor((Math.random() * 255) + 1) + ',' + Math.floor((Math.random() * 255) + 1) + ',' + Math.floor((Math.random() * 255) + 1) + ',' + Math.floor((Math.random() * 255) + 1) + ')';
+        ctx.fillStyle = 'rgba(' + col + ',' + col + ',' + col + ',' + col + ')';
         ctx.fill();
         ctx.closePath();
       }
@@ -131,7 +129,6 @@ function draw() {
       if (!lives) {
         alert('GAME OVER');
         document.location.reload();
-            // clearInterval(interval); // Needed for Chrome to end game
       }
       else {
         x = canvas.width / 2;
