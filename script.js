@@ -24,13 +24,12 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
-const ballRadius = 10;
 
-let x = (canvas.width / 2);
-let y = canvas.height - 30;
 
-console.log("x: ", x);
-console.log("y: ", y);
+
+
+// console.log("x: ", x);
+// console.log("y: ", y);
 
 let dx = 2;
 let dy = -2;
@@ -39,18 +38,38 @@ let score = 0;
 let lives = 3;
 
 
+
+
 const colR = Math.floor((Math.random() * 255) + 1);
 const colG = Math.floor((Math.random() * 255) + 1);
 const colB = Math.floor((Math.random() * 255) + 1);
 const colT = Math.floor((Math.random() * 255) + 1);
 
-function drawBall() {
-  ctx.beginPath();
-  ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')';
-  ctx.fill();
-  ctx.closePath();
+
+
+class Ball {
+  constructor(x, y, ballRadius, col) {
+    this.x = x;
+    this.y = y;
+    this.ballRadius = ballRadius;
+    this.col = col;
+  }
+
+  drawBall() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.closePath();
+  }
+
+
 }
+
+const col = 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')';
+const ball = new Ball((canvas.width / 2), canvas.height - 30, 10, col);
+
+
 
 function drawPaddle() {
   ctx.beginPath();
@@ -87,7 +106,17 @@ function drawBricks() {
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = bricks[c][r].col
+        ctx.fillStyle = bricks[c][r].col;
+        // rows
+        // if (c === 0) {
+        //   ctx.fillStyle = 'red';
+        // } else if (c === 1) {
+        //   ctx.fillStyle = 'blue';
+        // } else if (c === 2) {
+        //   ctx.fillStyle = 'purple';
+        // } else if (r === 0) {
+        //   ctx.fillStyle = 'purple';
+        // }
 
         ctx.fill();
         ctx.closePath();
@@ -113,12 +142,11 @@ function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c += 1) {
     for (let r = 0; r < brickRowCount; r += 1) {
       const b = bricks[c][r];
-      if (y==0) {
-        y = 50;
-
+      if (ball.y === 0) {
+        ball.y = 50;
       }
       if (b.status === 1) {
-        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+        if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
           dy = -dy;
           b.status = 0;
           score += 1;
@@ -136,35 +164,35 @@ function collisionDetection() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBricks();
-  drawBall();
+  ball.drawBall();
   drawPaddle();
   drawScore();
   drawLives();
   collisionDetection();
 
-  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+  if (ball.x + dx > canvas.width - ball.ballRadius || ball.x + dx < ball.ballRadius) {
     dx = -dx;
   }
-  if (y + dy < ballRadius) {
+  if (ball.y + dy < ball.ballRadius) {
     dy = -dy;
-  } else if (y + dy > canvas.height - ballRadius) {
-    if (x > paddleX && x < paddleX + paddleWidth) {
-      y = -dy;
+  } else if (ball.y + dy > canvas.height - ball.ballRadius) {
+    if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+      ball.y = -dy;
     }
-    else {
-      lives -= 1;
-      if (!lives) {
-        alert('GAME OVER');
-        document.location.reload();
-      }
-      else {
-        x = canvas.width / 2;
-        y = canvas.height - 30;
-        dx = 2;
-        dy = -2;
-        paddleX = (canvas.width - paddleWidth) / 2;
-      }
-    }
+    // else {
+    //   lives -= 1;
+    //   if (!lives) {
+    //     alert('GAME OVER');
+    //     document.location.reload();
+    //   }
+    //   else {
+    //     x = canvas.width / 2;
+    //     y = canvas.height - 30;
+    //     dx = 2;
+    //     dy = -2;
+    //     paddleX = (canvas.width - paddleWidth) / 2;
+    //   }
+    // }
   }
 
   if (rightPressed) {
@@ -180,8 +208,8 @@ function draw() {
     }
   }
 
-  x += dx;
-  y += dy;
+  ball.x += dx;
+  ball.y += dy;
   requestAnimationFrame(draw);
 }
 
