@@ -29,7 +29,6 @@ let leftPressed = false;
 let dx = 2;
 let dy = -2;
 
-let score = 0;
 let lives = 3;
 
 
@@ -138,11 +137,20 @@ function drawBricks() {
 }
 
 
-function drawScore() {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#0095DD';
-  ctx.fillText('Score: ' + score, 8, 20);
+class Score {
+  constructor(score) {
+    this.score = score;
+  }
+
+  drawScore() {
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#0095DD';
+    ctx.fillText('Score: ' + this.score, 8, 20);
+  }
 }
+
+const scoreBoard = new Score(0);
+
 
 function drawLives() {
   ctx.font = '16px Arial';
@@ -161,8 +169,8 @@ function collisionDetection() {
         if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
           dy = -dy;
           b.status = 0;
-          score += 1;
-          if (score === brickRowCount * brickColumnCount) {
+          scoreBoard.score += 1;
+          if (scoreBoard.score === brickRowCount * brickColumnCount) {
             alert('YOU WIN, CONGRATULATIONS!');
             document.location.reload();
             // clearInterval(interval); // Needed for Chrome to end game
@@ -178,7 +186,7 @@ function draw() {
   drawBricks();
   ball.drawBall();
   paddle.drawPaddle();
-  drawScore();
+  scoreBoard.drawScore();
   drawLives();
   collisionDetection();
 
