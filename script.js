@@ -1,6 +1,11 @@
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
+console.log("canvas width: ", canvas.width);
+console.log("canvas height: ", canvas.height);
 
+ctx.globalCompositeOperation = 'destination-over'
+ctx.fillStyle = "blue";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 const brickRowCount = 6;
 const brickColumnCount = 5;
@@ -21,8 +26,11 @@ let leftPressed = false;
 
 const ballRadius = 10;
 
-let x = canvas.width / 2;
+let x = (canvas.width / 2);
 let y = canvas.height - 30;
+
+console.log("x: ", x);
+console.log("y: ", y);
 
 let dx = 2;
 let dy = -2;
@@ -31,11 +39,15 @@ let score = 0;
 let lives = 3;
 
 
+const colR = Math.floor((Math.random() * 255) + 1);
+const colG = Math.floor((Math.random() * 255) + 1);
+const colB = Math.floor((Math.random() * 255) + 1);
+const colT = Math.floor((Math.random() * 255) + 1);
 
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = '#0095DD';
+  ctx.fillStyle = 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')';
   ctx.fill();
   ctx.closePath();
 }
@@ -49,23 +61,34 @@ function drawPaddle() {
 }
 
 
-
-
 const bricks = [];
+for (let c = 0; c < brickColumnCount; c += 1) {
+  bricks[c] = [];
+  for (let r = 0; r < brickRowCount; r += 1) {
+    const colR = Math.floor((Math.random() * 255) + 1);
+    const colG = Math.floor((Math.random() * 255) + 1);
+    const colB = Math.floor((Math.random() * 255) + 1);
+    const colT = Math.floor((Math.random() * 255) + 1);
+    bricks[c][r] = {
+      x: 0, y: 0, status: 1, col: 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')'
+    };
+  }
+}
+
+
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c += 1) {
-    bricks[c] = [];
     for (let r = 0; r < brickRowCount; r += 1) {
-      bricks[c][r] = { x: 0, y: 0, status: 1 };
       if (bricks[c][r].status === 1) {
         const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
         const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        const col = Math.floor((Math.random() * 255) + 1);
+
         bricks[c][r].x = brickX;
         bricks[c][r].y = brickY;
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = 'rgba(' + col + ',' + col + ',' + col + ',' + col + ')';
+        ctx.fillStyle = bricks[c][r].col
+
         ctx.fill();
         ctx.closePath();
       }
@@ -90,6 +113,10 @@ function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c += 1) {
     for (let r = 0; r < brickRowCount; r += 1) {
       const b = bricks[c][r];
+      if (y==0) {
+        y = 50;
+
+      }
       if (b.status === 1) {
         if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
           dy = -dy;
