@@ -1,26 +1,11 @@
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
-console.log("canvas width: ", canvas.width);
-console.log("canvas height: ", canvas.height);
-
-ctx.globalCompositeOperation = 'destination-over'
-ctx.fillStyle = "blue";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
-
-
 
 
 let rightPressed = false;
 let leftPressed = false;
 
 
-
-
-
-// console.log("x: ", x);
-// console.log("y: ", y);
 
 let dx = 2;
 let dy = -2;
@@ -45,7 +30,7 @@ class Ball {
     this.col = col;
   }
 
-  drawBall() {
+  render(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = col;
@@ -63,15 +48,15 @@ const ball = new Ball((canvas.width / 2), canvas.height - 30, col);
 
 class Paddle {
   constructor(x, y, paddleWidth, paddleHeight) {
-    this.paddleX = x;
-    this.paddleY = y;
-    this.paddleWidth = paddleWidth;
-    this.paddleHeight = paddleHeight;
+    this.x = x;
+    this.y = y;
+    this.width = paddleWidth;
+    this.height = paddleHeight;
   }
 
-  drawPaddle() {
+  render(ctx) {
     ctx.beginPath();
-    ctx.rect(this.paddleX, this.paddleY, this.paddleWidth, this.paddleHeight);
+    ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = '#0095DD';
     ctx.fill();
     ctx.closePath();
@@ -100,21 +85,21 @@ colT = randomNum;
 
 class Bricks {
   constructor() {
-    this.brickWidth = 75;
-    this.brickHeight = 20;
-    this.brickColumnCount = 5;
-    this.brickRowCount = 5;
-    this.brickPadding = 10;
-    this.brickOffsetTop = 30;
-    this.brickOffsetLeft = 30;
+    this.width = 75;
+    this.height = 20;
+    this.columnCount = 5;
+    this.rowCount = 5;
+    this.padding = 10;
+    this.offsetTop = 30;
+    this.offsetLeft = 30;
     this.bricks = [];
 
   }
 
   bricksInt() {
-    for (let c = 0; c < this.brickColumnCount; c += 1) {
+    for (let c = 0; c < this.columnCount; c += 1) {
       this.bricks[c] = [];
-      for (let r = 0; r < this.brickRowCount; r += 1) {
+      for (let r = 0; r < this.rowCount; r += 1) {
         const colR = Math.floor((Math.random() * 255) + 1);
         const colG = Math.floor((Math.random() * 255) + 1);
         const colB = Math.floor((Math.random() * 255) + 1);
@@ -127,16 +112,16 @@ class Bricks {
   }
 
   drawBricks() {
-    for (let c = 0; c < this.brickColumnCount; c += 1) {
-      for (let r = 0; r < this.brickRowCount; r += 1) {
+    for (let c = 0; c < this.columnCount; c += 1) {
+      for (let r = 0; r < this.rowCount; r += 1) {
         if (this.bricks[c][r].status === 1) {
-          const brickX = (c * (this.brickWidth + this.brickPadding)) + this.brickOffsetLeft;
-          const brickY = (r * (this.brickHeight + this.brickPadding)) + this.brickOffsetTop;
+          const brickX = (c * (this.width + this.padding)) + this.offsetLeft;
+          const brickY = (r * (this.height + this.padding)) + this.offsetTop;
 
           this.bricks[c][r].x = brickX;
           this.bricks[c][r].y = brickY;
           ctx.beginPath();
-          ctx.rect(brickX, brickY, this.brickWidth, this.brickHeight);
+          ctx.rect(brickX, brickY, this.width, this.height);
           ctx.fillStyle = this.bricks[c][r].col;
           ctx.fill();
           ctx.closePath();
@@ -155,10 +140,10 @@ class Score {
     this.score = score;
   }
 
-  drawScore() {
+  render(ctx) {
     ctx.font = '16px Arial';
     ctx.fillStyle = '#0095DD';
-    ctx.fillText('Score: ' + this.score, 8, 20);
+    ctx.fillText(`Score: ${this.score}` , 8, 20);
   }
 }
 
@@ -169,32 +154,28 @@ class Lives {
     this.lives = lives;
   }
 
-  drawLives() {
+  render(ctx) {
     ctx.font = '16px Arial';
     ctx.fillStyle = '#0095DD';
-    ctx.fillText('Lives: ' + this.lives, canvas.width - 65, 20);
+    ctx.fillText(`Lives: ${this.lives}`, canvas.width - 65, 20);
   }
 }
 
 const liveBoard = new Lives(3);
 
 function collisionDetection() {
-  console.log("Inside collision detection!!");
-  for (let c = 0; c < brickBuilder.brickColumnCount; c += 1) {
-    for (let r = 0; r < brickBuilder.brickRowCount; r += 1) {
+  for (let c = 0; c < brickBuilder.columnCount; c += 1) {
+    for (let r = 0; r < brickBuilder.rowCount; r += 1) {
       const b = brickBuilder.bricks[c][r];
-      console.log("bricks as b: ", b);
       if (ball.y === 0) {
         ball.y = 50;
       }
       if (b.status === 1) {
-        console.log("b status: ", b.status, 'b.x: ', b.x);
-        if (ball.x > b.x && ball.x < b.x + brickBuilder.brickWidth && ball.y > b.y && ball.y < b.y + brickBuilder.brickHeight) {
+        if (ball.x > b.x && ball.x < b.x + brickBuilder.width && ball.y > b.y && ball.y < b.y + brickBuilder.height) {
           dy = -dy;
           b.status = 0;
-          console.log("b status 0 >>>>>>>>>>>>>>>>>>>>", b.status);
           scoreBoard.score += 1;
-          if (scoreBoard.score === brickBuilder.brickRowCount * brickBuilder.brickColumnCount) {
+          if (scoreBoard.score === brickBuilder.rowCount * brickBuilder.columnCount) {
             alert('YOU WIN, CONGRATULATIONS!');
             document.location.reload();
             // clearInterval(interval); // Needed for Chrome to end game
@@ -208,10 +189,10 @@ function collisionDetection() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   brickBuilder.drawBricks();
-  ball.drawBall();
-  paddle.drawPaddle();
-  scoreBoard.drawScore();
-  liveBoard.drawLives();
+  ball.render(ctx);
+  paddle.render(ctx);
+  scoreBoard.render(ctx);
+  liveBoard.render(ctx);
   collisionDetection();
 
   if (ball.x + dx > canvas.width - ball.ballRadius || ball.x + dx < ball.ballRadius) {
@@ -220,7 +201,7 @@ function draw() {
   if (ball.y + dy < ball.ballRadius) {
     dy = -dy;
   } else if (ball.y + dy > canvas.height - ball.ballRadius) {
-    if (ball.x > paddle.paddleX && ball.x < paddle.paddleX + paddle.paddleWidth) {
+    if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
       ball.y = -dy;
     }
     else {
@@ -240,15 +221,15 @@ function draw() {
   }
 
   if (rightPressed) {
-    paddle.paddleX += 7;
-    if (paddle.paddleX + paddle.paddleWidth > canvas.width) {
-      paddle.paddleX = canvas.width - paddle.paddleWidth;
+    paddle.x += 7;
+    if (paddle.x + paddle.width > canvas.width) {
+      paddle.x = canvas.width - paddle.width;
     }
   }
   else if (leftPressed) {
-    paddle.paddleX -= 7;
-    if (paddle.paddleX < 0) {
-      paddle.paddleX = 0;
+    paddle.x -= 7;
+    if (paddle.x < 0) {
+      paddle.x = 0;
     }
   }
 
@@ -278,7 +259,7 @@ function keyUpHandler(e) {
 function mouseMoveHandler(e) {
   const relativeX = e.clientX - canvas.offsetLeft;
   if (relativeX > 0 && relativeX < canvas.width) {
-    paddle.paddleX = relativeX - paddle.paddleWidth / 2;
+    paddle.x = relativeX - paddle.width / 2;
   }
 }
 
