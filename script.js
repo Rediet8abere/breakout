@@ -10,20 +10,9 @@ let leftPressed = false;
 let dx = 2;
 let dy = -2;
 
-let randomNum = Math.floor((Math.random() * 255) + 1);
-
-
-
-
-let colR = randomNum;
-let colG = randomNum;
-let colB = randomNum;
-let colT = randomNum;
-
-
 
 class Ball {
-  constructor(x, y, col) {
+  constructor(x, y, col = '#0095DD') {
     this.x = x;
     this.y = y;
     this.ballRadius = 10;
@@ -33,7 +22,7 @@ class Ball {
   render(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = col;
+    ctx.fillStyle = this.col;
     ctx.fill();
     ctx.closePath();
   }
@@ -41,8 +30,7 @@ class Ball {
 
 }
 
-const col = 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')';
-const ball = new Ball((canvas.width / 2), canvas.height - 30, col);
+const ball = new Ball((canvas.width / 2), canvas.height - 30);
 
 
 
@@ -75,13 +63,6 @@ const paddle = new Paddle(paddleX, canvas.height - paddleHeight, paddleWidth, pa
 
 
 
-colR = randomNum;
-colG = randomNum;
-colB = randomNum;
-colT = randomNum;
-
-// const brickRowCount = 6;
-// const brickColumnCount = 5;
 
 class Bricks {
   constructor() {
@@ -111,20 +92,21 @@ class Bricks {
     }
   }
 
+  render(ctx, c, r) {
+    ctx.beginPath();
+    ctx.rect(this.bricks[c][r].x, this.bricks[c][r].y, this.width, this.height);
+    ctx.fillStyle = this.bricks[c][r].col;
+    ctx.fill();
+    ctx.closePath();
+  }
+
   drawBricks() {
     for (let c = 0; c < this.columnCount; c += 1) {
       for (let r = 0; r < this.rowCount; r += 1) {
         if (this.bricks[c][r].status === 1) {
-          const brickX = (c * (this.width + this.padding)) + this.offsetLeft;
-          const brickY = (r * (this.height + this.padding)) + this.offsetTop;
-
-          this.bricks[c][r].x = brickX;
-          this.bricks[c][r].y = brickY;
-          ctx.beginPath();
-          ctx.rect(brickX, brickY, this.width, this.height);
-          ctx.fillStyle = this.bricks[c][r].col;
-          ctx.fill();
-          ctx.closePath();
+          this.bricks[c][r].x = (c * (this.width + this.padding)) + this.offsetLeft;
+          this.bricks[c][r].y = (r * (this.height + this.padding)) + this.offsetTop;
+          this.render(ctx, c, r);
         }
       }
     }
@@ -171,14 +153,15 @@ function collisionDetection() {
         ball.y = 50;
       }
       if (b.status === 1) {
-        if (ball.x > b.x && ball.x < b.x + brickBuilder.width && ball.y > b.y && ball.y < b.y + brickBuilder.height) {
-          dy = -dy;
-          b.status = 0;
-          scoreBoard.score += 1;
-          if (scoreBoard.score === brickBuilder.rowCount * brickBuilder.columnCount) {
-            alert('YOU WIN, CONGRATULATIONS!');
-            document.location.reload();
-            // clearInterval(interval); // Needed for Chrome to end game
+        if (ball.x > b.x && ball.x < b.x + brickBuilder.width) {
+          if (ball.y > b.y && ball.y < b.y + brickBuilder.height) {
+            dy = -dy;
+            b.status = 0;
+            scoreBoard.score += 1;
+            if (scoreBoard.score === brickBuilder.rowCount * brickBuilder.columnCount) {
+              alert('YOU WIN, CONGRATULATIONS!');
+              document.location.reload();
+            }
           }
         }
       }
