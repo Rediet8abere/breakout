@@ -15,13 +15,13 @@ class Ball {
   constructor(x, y, col = '#0095DD') {
     this.x = x;
     this.y = y;
-    this.ballRadius = 10;
+    this.radius = 10;
     this.col = col;
   }
 
   render(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.ballRadius, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.col;
     ctx.fill();
     ctx.closePath();
@@ -78,6 +78,7 @@ class Bricks {
   }
 
   bricksInt() {
+    console.log("brick init");
     for (let c = 0; c < this.columnCount; c += 1) {
       this.bricks[c] = [];
       for (let r = 0; r < this.rowCount; r += 1) {
@@ -85,9 +86,24 @@ class Bricks {
         const colG = Math.floor((Math.random() * 255) + 1);
         const colB = Math.floor((Math.random() * 255) + 1);
         const colT = Math.floor((Math.random() * 255) + 1);
+        // this.bricks[c][r] = {
+        //   x: 0, y: 0, status: 1, col: 'red'
+        //   // 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')'
+        // };
         this.bricks[c][r] = {
-          x: 0, y: 0, status: 1, col: 'rgba(' + colR + ',' + colG + ',' + colB + ',' + colT + ')'
+          x: 0, y: 0, status: 1, col: 'green'
         };
+        if (c === 0) {
+          this.bricks[c][r].col = 'green';
+        } else if (c === 1) {
+          this.bricks[c][r].col = 'red';
+        } else if (c === 2) {
+          this.bricks[c][r].col = 'orange';
+        } else if (c === 3) {
+          this.bricks[c][r].col = 'lightblue';
+        } else {
+          this.bricks[c][r].col = 'pink';
+        }
       }
     }
   }
@@ -178,12 +194,12 @@ function draw() {
   liveBoard.render(ctx);
   collisionDetection();
 
-  if (ball.x + dx > canvas.width - ball.ballRadius || ball.x + dx < ball.ballRadius) {
+  if (ball.x + dx > canvas.width - ball.radius || ball.x + dx < ball.radius) {
     dx = -dx;
   }
-  if (ball.y + dy < ball.ballRadius) {
+  if (ball.y + dy < ball.radius) {
     dy = -dy;
-  } else if (ball.y + dy > canvas.height - ball.ballRadius) {
+  } else if (ball.y + dy > canvas.height - ball.radius) {
     if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
       ball.y = -dy;
     }
@@ -220,6 +236,75 @@ function draw() {
   ball.y += dy;
   requestAnimationFrame(draw);
 }
+
+// disabled
+class Game {
+  constructor(ball, paddle, liveBoard, scoreBoard, brickBuilder) {
+    this.ball = ball;
+    this.paddle = paddle;
+    this.liveBoard = liveBoard;
+    this.scoreBoard = scoreBoard;
+    this.brickBuilder = brickBuilder;
+  }
+
+  draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // console.log(this.ball);
+    // this.brickBuilder.drawBricks(ctx);
+    // this.ball.render(ctx);
+    // this.paddle.render(ctx);
+    // this.scoreBoard.render(ctx);
+    // this.liveBoard.render(ctx);
+    collisionDetection();
+
+    if (this.ball.x + dx > canvas.width - this.ball.radius || this.ball.x + dx < this.ball.radius) {
+      dx = -dx;
+    }
+    if (this.ball.y + dy < this.ball.radius) {
+      dy = -dy;
+    } else if (this.ball.y + dy > canvas.height - this.ball.radius) {
+      if (this.ball.x > paddle.x && this.ball.x < paddle.x + paddle.width) {
+        this.ball.y = -dy;
+      }
+      else {
+        this.liveBoard.lives -= 1;
+        if (!this.liveBoard.lives) {
+          alert('GAME OVER');
+          document.location.reload();
+        }
+        else {
+          this.ball.x = canvas.width / 2;
+          this.ball.y = canvas.height - 30;
+          dx = 2;
+          dy = -2;
+          paddleX = (canvas.width - paddleWidth) / 2;
+        }
+      }
+    }
+
+    if (rightPressed) {
+      this.paddle.x += 7;
+      if (this.paddle.x + this.paddle.width > canvas.width) {
+        this.paddle.x = canvas.width - this.paddle.width;
+      }
+    }
+    else if (leftPressed) {
+      this.paddle.x -= 7;
+      if (this.paddle.x < 0) {
+        this.paddle.x = 0;
+      }
+    }
+
+    this.ball.x += dx;
+    this.ball.y += dy;
+    requestAnimationFrame(this.draw);
+  }
+
+}
+// const play = new Game(ball, paddle, liveBoard, scoreBoard, brickBuilder);
+// play.brickBuilder.bricksInt();
+// play.draw();
+
 
 function keyDownHandler(e) {
   if (e.key === 'Right' || e.key === 'ArrowRight') {
