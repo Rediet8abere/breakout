@@ -12,3 +12,37 @@ Breakout game is based on [MDN 2D breakout game using pure JavaScript Tutorial](
   3. webpack: Bundling processes the sources to reduces file size by removing unnecessary characters, renames elements to obsecure code, Converts .ts files into .js files, Convert ES6 JS into JS that is compatible with older browsers, and finally combining all .js files into a single bundle.js file.
       ### Installing webpack
           * npm install --save-dev webpack webpack-cli
+      ### Directory Setup
+          * |- package.json
+            |- webpack.config.js
+            |- /src
+              |- index.js
+            |- /dist
+              |- index.html
+      ### webpack.config.js
+          * 
+            ```javascript
+                const path = require('path')
+
+                module.exports = {
+                 entry: './src/index.js',
+                 output: {
+                 filename: 'bundle.js',
+                 path: path.resolve(__dirname, 'dist')
+                 }
+                }
+            ```
+       ### Running script
+       
+            {
+              ```javascript
+                  ...
+                  "scripts": {
+                    "develop": "webpack --mode development --watch",
+                    "build": "webpack --mode production"
+                  },
+                  ...
+                }
+              ```
+            * Bundling project in develop mode: npm run develop
+            * production mode: npm run build
