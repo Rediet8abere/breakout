@@ -63,10 +63,10 @@ class Game {
         }
         else {
           this.ball.x = this.canvas.width / 2;
-          this.ball.y = canvas.height - 30;
-          ball.dx = 2;
-          ball.dy = -2;
-          paddleX = (this.canvas.width - paddleWidth) / 2;
+          this.ball.y = this.canvas.height - 30;
+          this.ball.dx = 2;
+          this.ball.dy = -2;
+          // paddleX = (this.canvas.width - paddleWidth) / 2;
         }
       }
     }
