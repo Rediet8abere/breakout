@@ -2,7 +2,7 @@
 
 Breakout game is based on [MDN 2D breakout game using pure JavaScript Tutorial](https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript)
 
-##Technologies Used:
+## Technologies Used:
   1. Started with Vanilla JS: plain JavaScript without any additional libraries like jQuery and P5*js
   2. ESlint: a tool that flag inconsistent style and suspicious code 
       ### Installing ESlint
